@@ -75,11 +75,11 @@ export class App {
     this.ui.showTaskScreen();
     this.ui.init(this.validateLetter.bind(this));
 
-    if (
-      !cache ||
-      (!restoreWithoutAsking &&
-        !confirm("You have unfinished excercise, restore?"))
-    ) {
+    const aborted =
+      !restoreWithoutAsking &&
+      !confirm("You have unfinished excercise, restore?");
+
+    if (!cache || aborted) {
       this.storage.clear();
       this.runTask(this.trainingSession.getNextTask());
       return;
