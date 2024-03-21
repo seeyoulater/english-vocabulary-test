@@ -11,7 +11,7 @@ export class KeyboardService {
   }
 
   private handleKeydown = (e: KeyboardEvent) => {
-    if (!letterRegex.test(e.key) || e.shiftKey || e.ctrlKey) {
+    if (!letterRegex.test(e.key) || e.shiftKey || e.ctrlKey || e.metaKey) {
       return;
     }
 

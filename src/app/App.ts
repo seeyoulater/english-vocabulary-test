@@ -21,42 +21,49 @@ export class App {
 
   private isBusy = false;
 
-  constructor(
-    ui: UI,
-    storage: StorageService,
-    { words, maxErrors }: { words: string[]; maxErrors: number },
-  ) {
+  constructor(ui: UI, storage: StorageService, words: string[]) {
     this.trainingSession = new TrainingSession(words);
-    this.statistics = new Statistics(maxErrors);
+    this.statistics = new Statistics();
     this.keyboard = new KeyboardService(this.validateLetter.bind(this));
-
-    this.router = new RouterService((e) => {
-      const { taskId } = e.state ?? {};
-
-      if (taskId) {
-        const word = this.trainingSession.getTaskByIndex(taskId - 1);
-        const wordStats = this.statistics.getWordStatistic(word);
-
-        /**
-         * No stats means that word isn't finished yet
-         */
-        if (!wordStats) {
-          this.restore(true);
-          this.keyboard.connect();
-          return;
-        }
-
-        this.keyboard.disconnect();
-        this.ui.renderAnswer(word, wordStats.success ? "success" : "danger");
-        this.ui.updateStatusBar(taskId, this.trainingSession.total);
-      }
-    });
+    this.router = new RouterService(this.onRouteChange.bind(this));
 
     // DI for inversion of control
     this.storage = storage;
     this.ui = ui;
 
     this.restore();
+  }
+
+  private onRouteChange(e: PopStateEvent) {
+    const route = this.router.getCurrentRouteName();
+
+    switch (route) {
+      case RouterPage.Results:
+        this.finishSession();
+        break;
+      case RouterPage.Task:
+        this.ui.showTaskScreen();
+        const { taskId } = e.state ?? {};
+
+        if (taskId) {
+          const word = this.trainingSession.getTaskByIndex(taskId - 1);
+          const wordStats = this.statistics.getWordStatistic(word);
+
+          /**
+           * No stats means that word isn't finished yet
+           */
+          if (!wordStats) {
+            this.restore(true);
+            this.keyboard.connect();
+            return;
+          }
+
+          this.keyboard.disconnect();
+          this.ui.renderAnswer(word, wordStats.success ? "success" : "danger");
+          this.ui.renderStatusbar(taskId, this.trainingSession.total);
+        }
+        break;
+    }
   }
 
   /**
@@ -93,7 +100,7 @@ export class App {
       this.statistics.setState(statistics);
       this.runTask(this.trainingSession.getCurrentTask(), taskHandler);
     } catch (e) {
-      console.error(e);
+      console.error("Unable to parse storage");
       this.storage.clear();
       this.runTask(this.trainingSession.getNextTask());
     }
@@ -128,6 +135,7 @@ export class App {
       this.statistics.addWordStatistics(
         this.taskHandler.originalWord,
         this.taskHandler.getErrorsCount(),
+        this.taskHandler.isSuccessful,
       );
     }
 
@@ -141,6 +149,12 @@ export class App {
     }
 
     this.saveCache();
+  }
+
+  private finishSession() {
+    this.storage.clear();
+    this.keyboard.disconnect();
+    this.ui.showStatisticsScreen(this.statistics.getSummary());
   }
 
   private finishTask() {
@@ -157,7 +171,7 @@ export class App {
       this.keyboard.connect();
       this.taskHandler = new TaskHandler(state || { originalWord: task.word });
       this.ui.renderTask(this.taskHandler.getState());
-      this.ui.updateStatusBar(task.currentIndex, task.total);
+      this.ui.renderStatusbar(task.currentIndex, task.total);
       this.router.goTo(RouterPage.Task, { taskId: task.currentIndex });
 
       /**
@@ -167,9 +181,7 @@ export class App {
         this.saveCache();
       }
     } else {
-      this.storage.clear();
-      this.keyboard.disconnect();
-      this.ui.showStatisticsScreen(this.statistics.getSummary());
+      this.finishSession();
       this.router.goTo(RouterPage.Results);
     }
   }

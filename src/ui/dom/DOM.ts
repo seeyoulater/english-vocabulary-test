@@ -1,7 +1,12 @@
 import { TaskHandlerState } from "../../domain/TaskHandler";
-import { isButtonTarget, sanitizeHTML } from "../../utils";
-import { UI } from "../ui.interface";
-import { Button, ButtonType } from "./Button";
+import { isButtonTarget, sanitize } from "../../utils";
+import { ButtonType, UI } from "../ui.interface";
+import { Button } from "./Button";
+
+const enum Screen {
+  Task = "Task",
+  Results = "Results",
+}
 
 type DOMProps = {
   container: string;
@@ -10,6 +15,7 @@ type DOMProps = {
 export class DOM implements UI {
   private $root: HTMLElement;
   private currentButtons: Button[];
+  private screen: Screen;
 
   constructor({ container }: DOMProps) {
     this.$root = document.querySelector(container);
@@ -117,12 +123,16 @@ export class DOM implements UI {
     this.addAnswerLetter(word, type);
   }
 
-  public updateStatusBar(question: number, total: number) {
-    this.$currentQuestion.innerHTML = sanitizeHTML(question.toString());
-    this.$total.innerHTML = sanitizeHTML(total.toString());
+  public renderStatusbar(question: number, total: number) {
+    this.$currentQuestion.innerHTML = sanitize(question.toString());
+    this.$total.innerHTML = sanitize(total.toString());
   }
 
   public showTaskScreen() {
+    if (this.screen === Screen.Task) {
+      return;
+    }
+
     this.$root.innerHTML = `
         <p class="lead mb-1">Form a valid English word using the given letters</p>
         <p class="mb-5">Question <span id="current_question">1</span> of <span id="total_questions">10</span></p>
@@ -131,9 +141,16 @@ export class DOM implements UI {
             <div id="letters" class="mt-3"></div>
         </div>
     `;
+
+    this.screen = Screen.Task;
   }
 
   public showStatisticsScreen(summary: string) {
-    this.$root.innerHTML = `<div class="alert alert-info" role="alert">${sanitizeHTML(summary)}</div>`;
+    if (this.screen === Screen.Results) {
+      return;
+    }
+
+    this.$root.innerHTML = `<div class="alert alert-info" role="alert">${sanitize(summary)}</div>`;
+    this.screen = Screen.Results;
   }
 }

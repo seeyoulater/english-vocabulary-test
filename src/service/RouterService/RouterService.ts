@@ -13,7 +13,7 @@ type Page<T extends RouterPage = RouterPage> = {
   url: string;
 };
 
-const routes: Page[] = [
+const routes: ReadonlyArray<Page> = [
   {
     name: RouterPage.Task,
     url: "/task/:taskId",
@@ -49,6 +49,23 @@ export class RouterService {
     if (!route) {
       return;
     }
+
     history.pushState(params, "", this.buildUrl(route.url, params));
+  }
+
+  getCurrentRouteName(): RouterPage | undefined {
+    for (const route of routes) {
+      // For simplicity, replace path parameters with a wildcard regex
+      // This will match /task/anythingHere to /task/:taskId
+      const regex = new RegExp(
+        "^" + route.url.replace(/:[^\s/]+/g, "([^\\s\\/]+)") + "$",
+      );
+
+      if (regex.test(location.pathname)) {
+        return route.name;
+      }
+    }
+
+    return undefined;
   }
 }

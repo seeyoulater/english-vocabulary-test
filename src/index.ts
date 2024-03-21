@@ -22,4 +22,4 @@ const ui = new DOM({
 
 const storage = new LocalStorageService();
 
-const app = new App(ui, storage, { words, maxErrors: 3 });
+const app = new App(ui, storage, words);

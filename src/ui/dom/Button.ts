@@ -1,4 +1,4 @@
-export type ButtonType = "success" | "primary" | "danger";
+import { ButtonType } from "../ui.interface";
 
 export class Button {
   letter: string;
@@ -15,7 +15,7 @@ export class Button {
     this.element.classList.add("btn-danger");
 
     setTimeout(() => {
-      this.element.classList.remove("btn-danger");
+      this.element?.classList.remove("btn-danger");
     }, 500);
   }
 

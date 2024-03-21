@@ -16,10 +16,8 @@ export class Statistics implements ServiceWithCache<StatisticsState> {
   private statistics: WordStatistics[];
   private totalErrors: number;
   private correctWords: number;
-  private maxErrors: number;
 
-  constructor(maxErrors: number) {
-    this.maxErrors = maxErrors;
+  constructor() {
     this.reset();
   }
 
@@ -29,8 +27,11 @@ export class Statistics implements ServiceWithCache<StatisticsState> {
     this.correctWords = 0;
   }
 
-  public addWordStatistics(word: string, errors: number): void {
-    const success = errors < this.maxErrors;
+  public addWordStatistics(
+    word: string,
+    errors: number,
+    success: boolean,
+  ): void {
     this.statistics.push({ word, errors, success });
     this.totalErrors += errors;
 
