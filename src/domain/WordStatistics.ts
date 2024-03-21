@@ -13,13 +13,9 @@ export type StatisticsState = {
 };
 
 export class Statistics implements ServiceWithCache<StatisticsState> {
-  private statistics: WordStatistics[];
-  private totalErrors: number;
-  private correctWords: number;
-
-  constructor() {
-    this.reset();
-  }
+  private statistics: WordStatistics[] = [];
+  private totalErrors: number = 0;
+  private correctWords: number = 0;
 
   public reset() {
     this.statistics = [];
@@ -32,15 +28,17 @@ export class Statistics implements ServiceWithCache<StatisticsState> {
     errors: number,
     success: boolean,
   ): void {
+    if (!word) throw new Error("Word cannot be empty");
+
     this.statistics.push({ word, errors, success });
     this.totalErrors += errors;
 
-    if (success) {
-      this.correctWords += 1;
-    }
+    if (success) this.correctWords += 1;
   }
 
   public getSummary(): string {
+    if (this.statistics.length === 0) return "No statistics available.";
+
     const wordWithMostErrors = this.statistics.reduce((prev, current) =>
       prev.errors > current.errors ? prev : current,
     );

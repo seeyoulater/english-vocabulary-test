@@ -51,10 +51,9 @@ export class TaskHandler implements ServiceWithCache<TaskHandlerState> {
   addUserInput(letter: string): boolean {
     if (this.isFailed) return false;
 
-    if (
-      this.originalWord.includes(letter) &&
-      letter === this.originalWord[this.userAttempt.length]
-    ) {
+    const expectedLetter = this.originalWord[this.userAttempt.length];
+
+    if (letter === expectedLetter) {
       this.userAttempt += letter;
 
       return true;

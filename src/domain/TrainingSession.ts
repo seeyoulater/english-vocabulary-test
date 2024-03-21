@@ -16,41 +16,45 @@ export class TrainingSession implements ServiceWithCache<TrainingSessionState> {
   private words: string[];
   private currentWordIndex: number;
   private maxTasks: number;
-  private tasks: string[];
+  private taskList: string[];
 
   constructor(words: string[], maxTasks: number = 6) {
     this.words = words;
     this.currentWordIndex = 0;
     this.maxTasks = maxTasks;
-    this.tasks = [];
+    this.taskList = [];
     this.generateTasks();
   }
 
   get total() {
-    return this.tasks.length;
+    return this.taskList.length;
   }
 
   private generateTasks(): void {
-    this.tasks = shuffleArray(this.words).slice(0, this.maxTasks);
+    this.taskList = shuffleArray(this.words).slice(0, this.maxTasks);
   }
 
-  public getNextTask(): Task {
-    if (this.currentWordIndex < this.tasks.length) {
-      const nextIndex = this.currentWordIndex++;
-
-      return {
-        word: this.tasks[nextIndex],
-        currentIndex: nextIndex + 1,
-        total: this.tasks.length,
+  // Returns the next task or null if there are no more tasks
+  public getNextTask(): Task | null {
+    if (this.currentWordIndex < this.taskList.length) {
+      const task = {
+        word: this.taskList[this.currentWordIndex],
+        currentIndex: this.currentWordIndex + 1,
+        total: this.taskList.length,
       };
+
+      this.currentWordIndex += 1;
+
+      return task;
     }
 
     return null;
   }
 
+  // Returns the current task
   public getCurrentTask(): Task {
     return {
-      word: this.tasks[this.currentWordIndex],
+      word: this.taskList[this.currentWordIndex],
       currentIndex: this.currentWordIndex,
       total: this.total,
     };
@@ -59,16 +63,16 @@ export class TrainingSession implements ServiceWithCache<TrainingSessionState> {
   public getState() {
     return {
       currentWordIndex: this.currentWordIndex,
-      tasks: this.tasks,
+      tasks: this.taskList,
     };
   }
 
   public setState(state: TrainingSessionState) {
     this.currentWordIndex = state.currentWordIndex;
-    this.tasks = state.tasks;
+    this.taskList = state.tasks;
   }
 
   public getTaskByIndex(index: number) {
-    return this.tasks[index];
+    return this.taskList[index];
   }
 }
