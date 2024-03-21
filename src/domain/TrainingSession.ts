@@ -1,3 +1,4 @@
+import { shuffleArray } from "../utils";
 import { ServiceWithCache } from "./ServiceWithCache";
 
 export type TrainingSessionState = {
@@ -30,11 +31,7 @@ export class TrainingSession implements ServiceWithCache<TrainingSessionState> {
   }
 
   private generateTasks(): void {
-    const shuffledIndices = Array.from(Array(this.words.length).keys())
-      .sort(() => Math.random() - 0.5)
-      .slice(0, this.maxTasks);
-
-    this.tasks = shuffledIndices.map((index) => this.words[index]);
+    this.tasks = shuffleArray(this.words).slice(0, this.maxTasks);
   }
 
   public getNextTask(): Task {

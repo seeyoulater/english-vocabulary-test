@@ -1,8 +1,7 @@
+import { shuffleArray } from "./array";
+
 export const shuffleString = (str: string) =>
-  str
-    .split("")
-    .sort(() => Math.random() - 0.5)
-    .join("");
+  shuffleArray(Array.from(str)).join("");
 
 export const sanitize = (str: string) => {
   const map: Record<string, string> = {

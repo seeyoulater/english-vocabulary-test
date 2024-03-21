@@ -116,6 +116,9 @@ export class App {
     );
   }
 
+  /**
+   * Validates letter from button / keyboard
+   */
   private validateLetter(letter: string, index: number) {
     if (!this.taskHandler) {
       throw Error("No running tasks");
@@ -175,7 +178,7 @@ export class App {
       this.router.goTo(RouterPage.Task, { taskId: task.currentIndex });
 
       /**
-       * Do not save for first task without any attempts
+       * Do not save the first task if there's no attempts
        */
       if (!(task.currentIndex === 1 && this.taskHandler.isEmpty)) {
         this.saveCache();
