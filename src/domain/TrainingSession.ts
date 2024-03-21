@@ -1,4 +1,4 @@
-import { ServiceWithCache } from './ServiceWithCache';
+import { ServiceWithCache } from "./ServiceWithCache";
 
 export type TrainingSessionState = {
   currentWordIndex: number;
@@ -26,7 +26,7 @@ export class TrainingSession implements ServiceWithCache<TrainingSessionState> {
   }
 
   get total() {
-    return this.tasks.length
+    return this.tasks.length;
   }
 
   private generateTasks(): void {
@@ -39,7 +39,7 @@ export class TrainingSession implements ServiceWithCache<TrainingSessionState> {
 
   public getNextTask(): Task {
     if (this.currentWordIndex < this.tasks.length) {
-      const nextIndex = this.currentWordIndex++
+      const nextIndex = this.currentWordIndex++;
 
       return {
         word: this.tasks[nextIndex],
@@ -59,19 +59,19 @@ export class TrainingSession implements ServiceWithCache<TrainingSessionState> {
     };
   }
 
-  public getState () {
+  public getState() {
     return {
       currentWordIndex: this.currentWordIndex,
       tasks: this.tasks,
-    }
-  };
+    };
+  }
 
   public setState(state: TrainingSessionState) {
     this.currentWordIndex = state.currentWordIndex;
     this.tasks = state.tasks;
-  };
+  }
 
   public getTaskByIndex(index: number) {
-    return this.tasks[index]
+    return this.tasks[index];
   }
 }

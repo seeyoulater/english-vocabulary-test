@@ -1,5 +1,5 @@
-import { shuffleString } from '../utils';
-import { ServiceWithCache } from './ServiceWithCache';
+import { shuffleString } from "../utils";
+import { ServiceWithCache } from "./ServiceWithCache";
 
 export type TaskHandlerState = {
   originalWord: string;
@@ -8,15 +8,20 @@ export type TaskHandlerState = {
   errors: number;
 };
 
-const maxErrors = 3
+const maxErrors = 3;
 
-export class TaskHandler implements ServiceWithCache <TaskHandlerState> {
+export class TaskHandler implements ServiceWithCache<TaskHandlerState> {
   originalWord: string;
   shuffledWord: string;
   private userAttempt: string;
   private errors: number;
 
-  constructor({ originalWord, shuffledWord, userAttempt = '', errors = 0 }: Partial<TaskHandlerState>) {
+  constructor({
+    originalWord,
+    shuffledWord,
+    userAttempt = "",
+    errors = 0,
+  }: Partial<TaskHandlerState>) {
     this.originalWord = originalWord;
     this.shuffledWord = shuffledWord || shuffleString(originalWord);
     this.userAttempt = userAttempt;
@@ -36,7 +41,7 @@ export class TaskHandler implements ServiceWithCache <TaskHandlerState> {
   }
 
   get isEmpty() {
-    return !this.userAttempt.length
+    return !this.userAttempt.length;
   }
 
   /**

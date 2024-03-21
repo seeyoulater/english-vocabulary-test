@@ -1,7 +1,7 @@
-import { TaskHandlerState } from '../../domain/TaskHandler';
-import { isButtonTarget, sanitizeHTML } from '../../utils';
-import { UI } from '../ui.interface';
-import { Button, ButtonType } from './Button';
+import { TaskHandlerState } from "../../domain/TaskHandler";
+import { isButtonTarget, sanitizeHTML } from "../../utils";
+import { UI } from "../ui.interface";
+import { Button, ButtonType } from "./Button";
 
 type DOMProps = {
   container: string;
@@ -19,23 +19,23 @@ export class DOM implements UI {
    * DOM Access
    */
   get $letters() {
-    return this.$root.querySelector('#letters');
+    return this.$root.querySelector("#letters");
   }
 
   get $answer() {
-    return this.$root.querySelector('#answer');
+    return this.$root.querySelector("#answer");
   }
 
   get $currentQuestion() {
-    return this.$root.querySelector('#current_question');
+    return this.$root.querySelector("#current_question");
   }
 
   get $total() {
-    return this.$root.querySelector('#total_questions');
+    return this.$root.querySelector("#total_questions");
   }
 
   init(onLetterClick: (letter: string, index: number) => boolean) {
-    this.$letters.addEventListener('click', (e) => {
+    this.$letters.addEventListener("click", (e) => {
       if (!isButtonTarget(e.target)) {
         return;
       }
@@ -54,12 +54,12 @@ export class DOM implements UI {
   private addAnswerLetter(letters: string, buttonType?: ButtonType) {
     this.$answer.append(
       ...letters
-        .split('')
+        .split("")
         .map((letter) => new Button(letter, buttonType).element),
     );
   }
 
-  public markLetter(mark: 'success' | 'error', letter: string, index?: number) {
+  public markLetter(mark: "success" | "error", letter: string, index?: number) {
     const _index =
       index ||
       this.currentButtons.findIndex((button) => button.letter === letter);
@@ -70,21 +70,21 @@ export class DOM implements UI {
 
     const button = this.currentButtons[_index];
 
-    if (mark === 'success') {
+    if (mark === "success") {
       button.destroy();
       this.currentButtons.splice(_index, 1);
-      this.addAnswerLetter(button.letter, 'success');
+      this.addAnswerLetter(button.letter, "success");
     } else {
       button.highLightError();
     }
   }
 
   public renderTask(task: TaskHandlerState) {
-    this.$answer.innerHTML = '';
-    this.$letters.innerHTML = '';
+    this.$answer.innerHTML = "";
+    this.$letters.innerHTML = "";
 
     if (task.userAttempt) {
-      this.addAnswerLetter(task.userAttempt, 'success');
+      this.addAnswerLetter(task.userAttempt, "success");
     }
 
     const shuffledWord = Array.from(task.userAttempt).reduce(
@@ -111,9 +111,9 @@ export class DOM implements UI {
     );
   }
 
-  public renderAnswer(word: string, type: ButtonType = 'danger') {
-    this.$answer.innerHTML = '';
-    this.$letters.innerHTML = '';
+  public renderAnswer(word: string, type: ButtonType = "danger") {
+    this.$answer.innerHTML = "";
+    this.$letters.innerHTML = "";
     this.addAnswerLetter(word, type);
   }
 

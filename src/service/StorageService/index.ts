@@ -1,2 +1,2 @@
-export * from './StorageService'
-export * from './LocalStorageService'
+export * from "./StorageService";
+export * from "./LocalStorageService";

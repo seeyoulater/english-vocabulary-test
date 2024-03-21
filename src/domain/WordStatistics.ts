@@ -1,4 +1,4 @@
-import { ServiceWithCache } from './ServiceWithCache';
+import { ServiceWithCache } from "./ServiceWithCache";
 
 type WordStatistics = {
   word: string;
@@ -30,7 +30,7 @@ export class Statistics implements ServiceWithCache<StatisticsState> {
   }
 
   public addWordStatistics(word: string, errors: number): void {
-    const success = errors < this.maxErrors
+    const success = errors < this.maxErrors;
     this.statistics.push({ word, errors, success });
     this.totalErrors += errors;
 
@@ -44,11 +44,11 @@ export class Statistics implements ServiceWithCache<StatisticsState> {
       prev.errors > current.errors ? prev : current,
     );
 
-    return `Correct words: ${this.correctWords}, Total errors: ${this.totalErrors}, Word with most errors: ${wordWithMostErrors.errors ? wordWithMostErrors.word : '-'}`;
+    return `Correct words: ${this.correctWords}, Total errors: ${this.totalErrors}, Word with most errors: ${wordWithMostErrors.errors ? wordWithMostErrors.word : "-"}`;
   }
 
   public getWordStatistic(word: string) {
-    return this.statistics.find(stat => stat.word === word)
+    return this.statistics.find((stat) => stat.word === word);
   }
 
   public getState(): StatisticsState {
@@ -60,8 +60,8 @@ export class Statistics implements ServiceWithCache<StatisticsState> {
   }
 
   public setState(state: StatisticsState) {
-    this.correctWords = state.correctWords
-    this.statistics = state.statistics
-    this.totalErrors = state.totalErrors
+    this.correctWords = state.correctWords;
+    this.statistics = state.statistics;
+    this.totalErrors = state.totalErrors;
   }
 }

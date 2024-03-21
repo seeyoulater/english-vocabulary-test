@@ -1,6 +1,6 @@
-import { StorageService } from './StorageService';
+import { StorageService } from "./StorageService";
 
-const storageKey = 'session';
+const storageKey = "session";
 
 export class LocalStorageService implements StorageService {
   constructor() {
@@ -11,7 +11,7 @@ export class LocalStorageService implements StorageService {
     try {
       JSON.parse(await this.getState());
     } catch {
-      console.error('Invalid storage state, resetting to default...');
+      console.error("Invalid storage state, resetting to default...");
       this.clear();
     }
   }

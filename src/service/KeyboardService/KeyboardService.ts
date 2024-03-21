@@ -16,15 +16,15 @@ export class KeyboardService {
     }
 
     this.onLetter(e.key.toLocaleLowerCase());
-  }
+  };
 
   connect() {
     if (this.connected) {
       return;
     }
 
-    document.body.addEventListener('keydown', this.handleKeydown);
-    this.connected = true
+    document.body.addEventListener("keydown", this.handleKeydown);
+    this.connected = true;
   }
 
   disconnect() {
@@ -32,7 +32,7 @@ export class KeyboardService {
       return;
     }
 
-    document.body.removeEventListener('keydown', this.handleKeydown);
-    this.connected = false
+    document.body.removeEventListener("keydown", this.handleKeydown);
+    this.connected = false;
   }
 }

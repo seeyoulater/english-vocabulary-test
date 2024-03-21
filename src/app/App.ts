@@ -1,14 +1,14 @@
-import { KeyboardService } from '../service/KeyboardService';
-import { RouterPage, RouterService } from '../service/RouterService';
-import { StorageService } from '../service/StorageService';
-import { TaskHandler, TaskHandlerState } from '../domain/TaskHandler';
+import { KeyboardService } from "../service/KeyboardService";
+import { RouterPage, RouterService } from "../service/RouterService";
+import { StorageService } from "../service/StorageService";
+import { TaskHandler, TaskHandlerState } from "../domain/TaskHandler";
 import {
   Task,
   TrainingSession,
   TrainingSessionState,
-} from '../domain/TrainingSession';
-import { Statistics, StatisticsState } from '../domain/WordStatistics';
-import { UI } from '../ui/ui.interface';
+} from "../domain/TrainingSession";
+import { Statistics, StatisticsState } from "../domain/WordStatistics";
+import { UI } from "../ui/ui.interface";
 
 export class App {
   private trainingSession: TrainingSession;
@@ -34,22 +34,21 @@ export class App {
       const { taskId } = e.state ?? {};
 
       if (taskId) {
-        const word = this.trainingSession.getTaskByIndex(taskId - 1)
-        const wordStats = this.statistics.getWordStatistic(word)
+        const word = this.trainingSession.getTaskByIndex(taskId - 1);
+        const wordStats = this.statistics.getWordStatistic(word);
 
         /**
          * No stats means that word isn't finished yet
          */
-        if(!wordStats) {
-          this.restore(true)
-          this.keyboard.connect()
-          return
+        if (!wordStats) {
+          this.restore(true);
+          this.keyboard.connect();
+          return;
         }
 
-        this.keyboard.disconnect()
-        this.ui.renderAnswer(word, wordStats.success ? 'success' : 'danger');
+        this.keyboard.disconnect();
+        this.ui.renderAnswer(word, wordStats.success ? "success" : "danger");
         this.ui.updateStatusBar(taskId, this.trainingSession.total);
-        
       }
     });
 
@@ -69,7 +68,11 @@ export class App {
     this.ui.showTaskScreen();
     this.ui.init(this.validateLetter.bind(this));
 
-    if (!cache || (!restoreWithoutAsking && !confirm('You have unfinished excercise, restore?'))) {
+    if (
+      !cache ||
+      (!restoreWithoutAsking &&
+        !confirm("You have unfinished excercise, restore?"))
+    ) {
       this.storage.clear();
       this.runTask(this.trainingSession.getNextTask());
       return;
@@ -108,7 +111,7 @@ export class App {
 
   private validateLetter(letter: string, index: number) {
     if (!this.taskHandler) {
-      throw Error('No running tasks');
+      throw Error("No running tasks");
     }
 
     if (this.isBusy) {
@@ -116,7 +119,7 @@ export class App {
     }
 
     this.ui.markLetter(
-      this.taskHandler.addUserInput(letter) ? 'success' : 'error',
+      this.taskHandler.addUserInput(letter) ? "success" : "error",
       letter,
       index,
     );
@@ -133,7 +136,7 @@ export class App {
     }
 
     if (this.taskHandler.isFailed) {
-      this.ui.renderAnswer(this.taskHandler.originalWord, 'danger');
+      this.ui.renderAnswer(this.taskHandler.originalWord, "danger");
       this.finishTask();
     }
 
