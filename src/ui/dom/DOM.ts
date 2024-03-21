@@ -16,6 +16,7 @@ export class DOM implements UI {
   private $root: HTMLElement;
   private currentButtons: Button[];
   private screen: Screen;
+  private _letterClickHandler: (letter: string, index: number) => boolean;
 
   constructor({ container }: DOMProps) {
     this.$root = document.querySelector(container);
@@ -40,21 +41,30 @@ export class DOM implements UI {
     return this.$root.querySelector("#total_questions");
   }
 
-  init(onLetterClick: (letter: string, index: number) => boolean) {
-    this.$letters.addEventListener("click", (e) => {
-      if (!isButtonTarget(e.target)) {
-        return;
-      }
+  private attachListeners() {
+    this.$letters.addEventListener("click", this.handleLetterClick.bind(this));
+  }
 
-      const index = Array.from(this.$letters.childNodes).indexOf(e.target);
-      const letter = this.currentButtons[index];
+  private detachListeners() {
+    this.$letters.removeEventListener(
+      "click",
+      this.handleLetterClick.bind(this),
+    );
+  }
 
-      if (!letter) {
-        return;
-      }
+  private handleLetterClick(e: MouseEvent) {
+    if (!isButtonTarget(e.target)) {
+      return;
+    }
 
-      onLetterClick(letter.letter, index);
-    });
+    const index = Array.from(this.$letters.childNodes).indexOf(e.target);
+    const letter = this.currentButtons[index];
+
+    if (!letter) {
+      return;
+    }
+
+    this._letterClickHandler(letter.letter, index);
   }
 
   private addAnswerLetter(letters: string, buttonType?: ButtonType) {
@@ -63,6 +73,14 @@ export class DOM implements UI {
         .split("")
         .map((letter) => new Button(letter, buttonType).element),
     );
+  }
+
+  public onLetterClick(handler: (letter: string, index: number) => boolean) {
+    if (this._letterClickHandler) {
+      throw Error("Click handler already attached");
+    }
+
+    this._letterClickHandler = handler;
   }
 
   public markLetter(mark: "success" | "error", letter: string, index?: number) {
@@ -117,15 +135,15 @@ export class DOM implements UI {
     );
   }
 
+  public renderStatusbar(question: number, total: number) {
+    this.$currentQuestion.innerHTML = sanitize(question.toString());
+    this.$total.innerHTML = sanitize(total.toString());
+  }
+
   public renderAnswer(word: string, type: ButtonType = "danger") {
     this.$answer.innerHTML = "";
     this.$letters.innerHTML = "";
     this.addAnswerLetter(word, type);
-  }
-
-  public renderStatusbar(question: number, total: number) {
-    this.$currentQuestion.innerHTML = sanitize(question.toString());
-    this.$total.innerHTML = sanitize(total.toString());
   }
 
   public showTaskScreen() {
@@ -142,6 +160,8 @@ export class DOM implements UI {
         </div>
     `;
 
+    this.attachListeners();
+
     this.screen = Screen.Task;
   }
 
@@ -149,6 +169,8 @@ export class DOM implements UI {
     if (this.screen === Screen.Results) {
       return;
     }
+
+    this.detachListeners();
 
     this.$root.innerHTML = `<div class="alert alert-info" role="alert">${sanitize(summary)}</div>`;
     this.screen = Screen.Results;

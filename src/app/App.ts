@@ -30,6 +30,7 @@ export class App {
     // DI for inversion of control
     this.storage = storage;
     this.ui = ui;
+    this.ui.onLetterClick(this.validateLetter.bind(this));
 
     this.restore();
   }
@@ -69,17 +70,18 @@ export class App {
   /**
    * Restore last session or start exercise
    */
-  private async restore(restoreWithoutAsking?: boolean) {
+  private async restore(force?: boolean) {
     const cache = await this.storage.getState();
 
     this.ui.showTaskScreen();
-    this.ui.init(this.validateLetter.bind(this));
 
-    const aborted =
-      !restoreWithoutAsking &&
-      !confirm("You have unfinished excercise, restore?");
-
-    if (!cache || aborted) {
+    /**
+     * Just regular start if no cache, not forced or not confirmed by user
+     */
+    if (
+      !cache ||
+      (!force && !confirm("You have unfinished excercise, restore?"))
+    ) {
       this.storage.clear();
       this.runTask(this.trainingSession.getNextTask());
       return;

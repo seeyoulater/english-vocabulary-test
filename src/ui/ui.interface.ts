@@ -1,18 +1,20 @@
 import { TaskHandlerState } from "../domain/TaskHandler";
 
 export type ButtonType = "success" | "primary" | "danger";
+
+export type LetterClickHandler = (letter: string, index: number) => boolean;
 export interface UI {
-  init: (onLetterClick: (letter: string) => boolean) => void;
-
-  renderTask: (taskState: TaskHandlerState) => void;
-  renderStatusbar: (question: number, total: number) => void;
-  renderAnswer: (word: string, type: ButtonType) => void;
-  showTaskScreen: () => void;
-  showStatisticsScreen: (summary: string) => void;
-
+  onLetterClick: (handler: LetterClickHandler) => void;
   markLetter: (
     mark: "success" | "error",
     letter: string,
     index?: number,
   ) => void;
+
+  renderTask: (taskState: TaskHandlerState) => void;
+  renderStatusbar: (question: number, total: number) => void;
+  renderAnswer: (word: string, type: ButtonType) => void;
+
+  showTaskScreen: () => void;
+  showStatisticsScreen: (summary: string) => void;
 }
