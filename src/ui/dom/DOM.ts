@@ -1,6 +1,6 @@
 import { TaskHandlerState } from "../../domain/TaskHandler";
 import { isButtonTarget, sanitize } from "../../utils";
-import { ButtonType, UI } from "../ui.interface";
+import { ButtonType, LetterClickHandler, UI } from "../ui.interface";
 import { Button } from "./Button";
 
 const enum Screen {
@@ -13,10 +13,10 @@ type DOMProps = {
 };
 
 export class DOM implements UI {
-  private $root: HTMLElement;
-  private currentButtons: Button[];
-  private screen: Screen;
-  private _letterClickHandler: (letter: string, index: number) => boolean;
+  private $root: HTMLElement | null = null;
+  private currentButtons: Button[] = [];
+  private screen: Screen | null = null;
+  private _letterClickHandler: LetterClickHandler | null = null;
 
   constructor({ container }: DOMProps) {
     this.$root = document.querySelector(container);
@@ -26,56 +26,55 @@ export class DOM implements UI {
    * DOM Access
    */
   get $letters() {
-    return this.$root.querySelector("#letters");
+    return this.$root?.querySelector("#letters");
   }
 
   get $answer() {
-    return this.$root.querySelector("#answer");
+    return this.$root?.querySelector("#answer");
   }
 
   get $currentQuestion() {
-    return this.$root.querySelector("#current_question");
+    return this.$root?.querySelector("#current_question");
   }
 
   get $total() {
-    return this.$root.querySelector("#total_questions");
+    return this.$root?.querySelector("#total_questions");
   }
 
   private attachListeners() {
-    this.$letters.addEventListener("click", this.handleLetterClick.bind(this));
+    this.$letters?.addEventListener("click", this.handleLetterClick.bind(this));
   }
 
   private detachListeners() {
-    this.$letters.removeEventListener(
+    this.$letters?.removeEventListener(
       "click",
       this.handleLetterClick.bind(this),
     );
   }
 
-  private handleLetterClick(e: MouseEvent) {
-    if (!isButtonTarget(e.target)) {
-      return;
-    }
+  private handleLetterClick(e: Event) {
+    if (!(e instanceof MouseEvent)) return;
+    if (!isButtonTarget(e.target)) return;
 
-    const index = Array.from(this.$letters.childNodes).indexOf(e.target);
+    const index = Array.from(this.$letters?.childNodes ?? []).indexOf(e.target);
     const letter = this.currentButtons[index];
 
     if (!letter) {
       return;
     }
 
-    this._letterClickHandler(letter.letter, index);
+    this._letterClickHandler?.(letter.letter, index);
   }
 
   private addAnswerLetter(letters: string, buttonType?: ButtonType) {
-    this.$answer.append(
+    this.$answer?.append(
       ...letters
         .split("")
         .map((letter) => new Button(letter, buttonType).element),
     );
   }
 
-  public onLetterClick(handler: (letter: string, index: number) => boolean) {
+  public onLetterClick(handler: LetterClickHandler) {
     if (this._letterClickHandler) {
       throw Error("Click handler already attached");
     }
@@ -104,6 +103,8 @@ export class DOM implements UI {
   }
 
   public renderTask(task: TaskHandlerState) {
+    if (!this.$answer || !this.$letters) return;
+
     this.$answer.innerHTML = "";
     this.$letters.innerHTML = "";
 
@@ -136,18 +137,22 @@ export class DOM implements UI {
   }
 
   public renderStatusbar(question: number, total: number) {
+    if (!this.$currentQuestion || !this.$total) return;
+
     this.$currentQuestion.innerHTML = sanitize(question.toString());
     this.$total.innerHTML = sanitize(total.toString());
   }
 
   public renderAnswer(word: string, type: ButtonType = "danger") {
+    if (!this.$answer || !this.$letters) return;
+
     this.$answer.innerHTML = "";
     this.$letters.innerHTML = "";
     this.addAnswerLetter(word, type);
   }
 
   public showTaskScreen() {
-    if (this.screen === Screen.Task) {
+    if (this.screen === Screen.Task || !this.$root) {
       return;
     }
 
@@ -166,7 +171,7 @@ export class DOM implements UI {
   }
 
   public showStatisticsScreen(summary: string) {
-    if (this.screen === Screen.Results) {
+    if (this.screen === Screen.Results || !this.$root) {
       return;
     }
 

@@ -9,7 +9,13 @@ export class LocalStorageService implements StorageService {
 
   private async checkValidity() {
     try {
-      JSON.parse(await this.getState());
+      const state = await this.getState();
+
+      if (!state) {
+        return;
+      }
+
+      JSON.parse(state);
     } catch {
       console.error("Invalid storage state, resetting to default...");
       this.clear();

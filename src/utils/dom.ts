@@ -1,3 +1,4 @@
 export const isButtonTarget = (
-  target: EventTarget,
-): target is HTMLButtonElement => target instanceof HTMLButtonElement;
+  target: EventTarget | null,
+): target is HTMLButtonElement =>
+  Boolean(target) && target instanceof HTMLButtonElement;

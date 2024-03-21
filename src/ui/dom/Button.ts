@@ -20,6 +20,6 @@ export class Button {
   }
 
   destroy() {
-    this.element.parentNode.removeChild(this.element);
+    this.element.parentNode?.removeChild(this.element);
   }
 }

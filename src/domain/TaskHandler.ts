@@ -17,8 +17,8 @@ export class TaskHandler implements ServiceWithCache<TaskHandlerState> {
   private errors: number;
 
   constructor({
-    originalWord,
-    shuffledWord,
+    originalWord = "",
+    shuffledWord = "",
     userAttempt = "",
     errors = 0,
   }: Partial<TaskHandlerState>) {

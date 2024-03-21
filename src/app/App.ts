@@ -112,7 +112,7 @@ export class App {
     this.storage.setState(
       JSON.stringify({
         trainingSession: this.trainingSession.getState(),
-        taskHandler: this.taskHandler.getState(),
+        taskHandler: this.taskHandler?.getState() ?? {},
         statistics: this.statistics.getState(),
       }),
     );
@@ -121,7 +121,7 @@ export class App {
   /**
    * Validates letter from button / keyboard
    */
-  private validateLetter(letter: string, index: number) {
+  private validateLetter(letter: string, index?: number) {
     if (!this.taskHandler) {
       throw Error("No running tasks");
     }
@@ -171,7 +171,7 @@ export class App {
     }, 1400);
   }
 
-  private runTask(task: Task, state?: TaskHandlerState): void {
+  private runTask(task: Task | null, state?: TaskHandlerState): void {
     if (task) {
       this.keyboard.connect();
       this.taskHandler = new TaskHandler(state || { originalWord: task.word });

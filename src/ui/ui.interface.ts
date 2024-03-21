@@ -2,7 +2,8 @@ import { TaskHandlerState } from "../domain/TaskHandler";
 
 export type ButtonType = "success" | "primary" | "danger";
 
-export type LetterClickHandler = (letter: string, index: number) => boolean;
+export type LetterClickHandler = (letter: string, index: number) => void;
+
 export interface UI {
   onLetterClick: (handler: LetterClickHandler) => void;
   markLetter: (

@@ -1,6 +1,6 @@
 const letterRegex = /^[a-zA-Z]$/;
 
-type OnLetterCallback = (letter: string) => void;
+type OnLetterCallback = (letter: string, index?: number) => void;
 
 export class KeyboardService {
   private onLetter: OnLetterCallback;
