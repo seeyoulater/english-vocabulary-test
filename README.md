@@ -1,13 +1,11 @@
-# Тестовое на вакансию Frontend (React / Vue.js) Developer
+# Typescript Splitted UI architecture for english vocabulary application
 
+* Custom routing via HistoryApi
+* Interchangeable UI module development using DI containers
 
-## Процесс сборки и запуска
+## Commands
 
-* `npm i` - установка зависимостей
-* `npm run dev` - запуск проекта в dev режиме
-* `npm run build` - сборка проекта в папку `./dist`
-* `npm run format` - запуск prettier на всей кодовой базе
-
-> Приложение написано за ≈10 часов.
-> Из чего-то сложного, пожалуй - только роутинг, на полноценное и масштабируемое решение с экранами на ваниле нужно больше времени
- 
+* `npm i`
+* `npm run dev`
+* `npm run build`
+* `npm run format`
